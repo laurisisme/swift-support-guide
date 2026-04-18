@@ -1,11 +1,27 @@
 import { ArrowLeft, TrendingDown, Clock, Activity, Sparkles } from "lucide-react";
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from "recharts";
 
 interface DoctorViewProps {
   onBack: () => void;
 }
 
-const trendData = [42, 38, 45, 35, 30, 28, 25];
-const max = Math.max(...trendData);
+const trendData = [
+  { day: "Mon", minutes: 42 },
+  { day: "Tue", minutes: 38 },
+  { day: "Wed", minutes: 45 },
+  { day: "Thu", minutes: 35 },
+  { day: "Fri", minutes: 30 },
+  { day: "Sat", minutes: 28 },
+  { day: "Sun", minutes: 25 },
+];
 
 export const DoctorView = ({ onBack }: DoctorViewProps) => {
   return (
@@ -66,21 +82,53 @@ export const DoctorView = ({ onBack }: DoctorViewProps) => {
             </div>
           </div>
 
-          <div className="flex items-end justify-between gap-2 h-32">
-            {trendData.map((v, i) => {
-              const days = ["M", "T", "W", "T", "F", "S", "S"];
-              return (
-                <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                  <div className="w-full flex-1 flex items-end">
-                    <div
-                      className="w-full rounded-t-lg bg-gradient-to-t from-primary to-primary/60 transition-smooth"
-                      style={{ height: `${(v / max) * 100}%` }}
-                    />
-                  </div>
-                  <span className="text-[10px] text-muted-foreground">{days[i]}</span>
-                </div>
-              );
-            })}
+          <div className="h-40 -ml-2 -mr-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={trendData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="offFreqFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="hsl(var(--border))"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="day"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                  width={28}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: "12px",
+                    fontSize: "12px",
+                  }}
+                  labelStyle={{ color: "hsl(var(--foreground))", fontWeight: 600 }}
+                  formatter={(value: number) => [`${value} min`, "OFF time"]}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="minutes"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth={2.5}
+                  fill="url(#offFreqFill)"
+                  dot={{ fill: "hsl(var(--primary))", r: 4, strokeWidth: 0 }}
+                  activeDot={{ r: 6 }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
